@@ -1,6 +1,6 @@
 # MIT License
 
-Copyright (c) 2026 Bryce Corbett
+Copyright (c) 2026 Bryce Corbett, Meghana Kolar, Sofia Jachno, Julia Aptekar
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

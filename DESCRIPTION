@@ -6,15 +6,15 @@ Authors@R: c(
     person("Meghana", "Kolar", , "meghanakolar@gmail.com", role = "aut"),
     person("Julia", "Aptekar", , "japtekar2024@gmail.com", role = "aut"),
     person("Sofia", "Jachno", , "sjach20@gmail.com", role = "aut"))
-Description: A tidyverse-style toolkit for exploring relationships
-    between democratic governance and gender representation in political
-    leadership. The package bundles a combined country-year dataset of
-    democracy indicators, executive leadership (presidents and monarchs),
-    and women's parliamentary representation, and provides helper
-    functions for loading, summarising, and visualising those data.
+Description: 
+ADD DESCRIPTION HERE!!!!
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Imports:
     readr
+Suggests:
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

@@ -1,0 +1,80 @@
+---
+title: "Main Functions"
+vignette: >
+  %\VignetteIndexEntry{Main Functions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+format:
+  html:
+    toc: true
+    embed-resources: true
+---
+
+```{r}
+#| label: setup
+#| include: false
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+This vignette lays out the functions that `demogendr`
+will eventually export. Each chunk below has a call and a short description of what it should do. As the
+package grows, these calls should become runnable.
+
+```{r}
+library(demogendr)
+
+democracy_data <- load_data()
+```
+
+## 1. `plot_women_in_parliament()` — line plot
+
+```{r}
+plot_women_in_parliament(
+  democracy_data,
+  countries = c("United States", "Sweden", "Honduras"),
+  min_year = 1990,
+  color_by = "is_democracy"
+)
+```
+
+Should draw a `ggplot2` line chart of the proportion of parliamentary
+seats held by women (`prop_in_par`) over time, with one line per
+country (`United States, Sweeden, and Honduras`). The `color_by` argument lets the user shade each country's
+line based on democratic status in that year, this should make it easy to see transitions in leadership.
+
+## 2. `summarise_leader_gender_gap()` — summary table
+
+```{r}
+summarise_leader_gender_gap(
+  democracy_data,
+  group_var = "decade",
+  leader = "president"
+)
+```
+
+Should return a tidy summary tibble grouped by the requested variable
+(`decade`, `year`, `is_democracy`, `region`, ...) with columns for the
+proportion of female vs. male leaders and the mean accession age for each gender. Passing `leader = "monarch"`
+should use the same calculations except for it should use monarchs instead of presidents.
+This is similar to `summarise_leadership_gender_gap()` which we
+wrote in Project 2 this would allow us to use it outside of a dashboard.
+
+## 3. `top_transition_countries()` — ranking calculation
+
+```{r}
+top_transition_countries(
+  democracy_data,
+  start_year = 1950,
+  end_year = 2020,
+  n = 10
+)
+```
+
+Should return the number of countries with the most regime transitions
+(Both into and out of democracy) over an inputed number of years. The
+function should compute `to_democracy` / `from_democracy` using lag and `is_democracy` within each country, then sum and sort. 
+This is a similar to `topn_countries()` from the Project 2 dashboard, but we can use it on a subset of the dataset.
