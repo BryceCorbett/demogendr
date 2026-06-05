@@ -13,14 +13,11 @@ test_that("plot of women in parliament works", {
 test_that("plot_women_in_parliament validates its inputs", {
   dat <- load_data()
 
-  # not a data frame
   expect_error(plot_women_in_parliament("not a df"))
 
-  # empty country vector
-  expect_error(plot_women_in_parliament(dat, countries = character(0)))
+    expect_error(plot_women_in_parliament(dat, countries = character(0)))
 
-  # missing required column
-  expect_error(
+      expect_error(
     plot_women_in_parliament(dat, color_by = "nonexistent_column")
   )
 })

@@ -37,3 +37,10 @@ columns shipped in \code{\link[=load_data]{load_data()}} (\verb{is_female_<leade
 birth year). If \code{group_var = "decade"} and no \code{decade} column is present, it
 will be derived from \code{year}.
 }
+\examples{
+\dontrun{
+dem <- load_data()
+summarise_leader_gender_gap(dem, group_var = "decade", leader = "president")
+summarise_leader_gender_gap(dem, group_var = "is_democracy", leader = "monarch")
+}
+}

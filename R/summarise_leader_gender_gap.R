@@ -26,11 +26,17 @@
 #'   leaders.
 #'
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' dem <- load_data()
+#' summarise_leader_gender_gap(dem, group_var = "decade", leader = "president")
+#' summarise_leader_gender_gap(dem, group_var = "is_democracy", leader = "monarch")
+#' }
 summarise_leader_gender_gap <- function(data,
                                         group_var = "decade",
                                         leader = "president") {
 
-  # Validate inputs
   if (!is.data.frame(data)) {
     stop("`data` must be a data frame.", call. = FALSE)
   }
@@ -44,7 +50,6 @@ summarise_leader_gender_gap <- function(data,
   gender_var <- paste0(leader, "_gender")
   age_var <- paste0(leader, "_accession_age")
 
-  # Derive the gender column from is_female_<leader> if not already there
   if (!gender_var %in% names(data)) {
     raw_gender <- paste0("is_female_", leader)
     if (raw_gender %in% names(data)) {
@@ -52,9 +57,6 @@ summarise_leader_gender_gap <- function(data,
     }
   }
 
-  # Derive the accession-age column from accession_year - birthyear if not
-  # already there. Note the typo "accesion" preserved from the source dataset
-  # for presidents.
   if (!age_var %in% names(data)) {
     acc_col <- if (leader == "president") {
       "president_accesion_year"
@@ -67,12 +69,10 @@ summarise_leader_gender_gap <- function(data,
     }
   }
 
-  # Derive decade from year if grouping by decade and decade is missing
   if (group_var == "decade" && !"decade" %in% names(data) && "year" %in% names(data)) {
     data$decade <- floor(data$year / 10) * 10
   }
 
-  # Final column check
   if (!all(c(group_var, gender_var, age_var) %in% names(data))) {
     stop(
       "`data` must contain (or be able to derive) `", group_var,
@@ -81,7 +81,6 @@ summarise_leader_gender_gap <- function(data,
     )
   }
 
-  # Delegate to the internal helper
   summarise_gender_gap(
     data = data,
     group_var = group_var,

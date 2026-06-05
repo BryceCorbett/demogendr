@@ -16,39 +16,62 @@ format:
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  eval = FALSE
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 7,
+  fig.height = 4.5
 )
 ```
 
-This vignette lays out the functions that `demogendr`
-will eventually export. Each chunk below has a call and a short description of what it should do. As the
-package grows, these calls should become runnable.
+`demogendr` bundles a country-year panel of democratic status, presidential
+and monarchic leadership, and women's representation in parliament. This
+vignette walks through one example use of each of the package's seven core
+functions, starting from loading the data.
 
 ```{r}
+#| label: load
 library(demogendr)
 
 democracy_data <- load_data()
+dim(democracy_data)
 ```
 
-## 1. `plot_women_in_parliament()` — line plot
+## 1. `load_data()` — load the bundled dataset
+
+`load_data()` reads the merged `Combined_Democracy_Data.csv` that ships in the
+package's `inst/extdata/` folder and returns it as a tibble, one row per
+country-year.
 
 ```{r}
-plot_women_in_parliament(
-  democracy_data,
-  countries = c("United States", "Sweden", "Honduras"),
-  min_year = 1990,
-  color_by = "is_democracy"
-)
+#| label: load-preview
+head(democracy_data[, c("country_name", "year", "is_democracy",
+                        "is_presidential", "prop_in_par")])
 ```
 
-Should draw a `ggplot2` line chart of the proportion of parliamentary
-seats held by women (`prop_in_par`) over time, with one line per
-country (`United States, Sweeden, and Honduras`). The `color_by` argument lets the user shade each country's
-line based on democratic status in that year, this should make it easy to see transitions in leadership.
+## 2. `clean_data()` — cleaning / wrangling
 
-## 2. `summarise_leader_gender_gap()` — summary table
+`clean_data()` enriches the raw panel with derived columns: age-at-accession
+for presidents and monarchs, a `has_female_leader` flag, a `decade` label, and
+year-over-year democratic-transition indicators.
 
 ```{r}
+#| label: clean
+clean <- clean_data(democracy_data)
+
+head(clean[, c("country_name", "year", "decade",
+               "president_age_at_accession",
+               "has_female_leader",
+               "to_democracy", "from_democracy")])
+```
+
+## 3. `summarise_leader_gender_gap()` — summary table
+
+Returns a tidy summary grouped by the requested variable (here `decade`) with
+the proportion of female vs. male leaders and the mean accession age for each
+gender. Passing `leader = "monarch"` runs the same calculation for monarchs.
+
+```{r}
+#| label: summarise-gap
 summarise_leader_gender_gap(
   democracy_data,
   group_var = "decade",
@@ -56,16 +79,14 @@ summarise_leader_gender_gap(
 )
 ```
 
-Should return a tidy summary tibble grouped by the requested variable
-(`decade`, `year`, `is_democracy`, `region`, ...) with columns for the
-proportion of female vs. male leaders and the mean accession age for each gender. Passing `leader = "monarch"`
-should use the same calculations except for it should use monarchs instead of presidents.
-This is similar to `summarise_leadership_gender_gap()` which we
-wrote in Project 2 this would allow us to use it outside of a dashboard.
+## 4. `top_transition_countries()` — ranking calculation
 
-## 3. `top_transition_countries()` — ranking calculation
+Computes `to_democracy` / `from_democracy` events from `is_democracy` within
+each country (using a `data.table` within-country lag), then sums and sorts to
+return the countries with the most regime transitions over a chosen window.
 
 ```{r}
+#| label: top-transitions
 top_transition_countries(
   democracy_data,
   start_year = 1950,
@@ -74,7 +95,74 @@ top_transition_countries(
 )
 ```
 
-Should return the number of countries with the most regime transitions
-(Both into and out of democracy) over an inputed number of years. The
-function should compute `to_democracy` / `from_democracy` using lag and `is_democracy` within each country, then sum and sort. 
-This is a similar to `topn_countries()` from the Project 2 dashboard, but we can use it on a subset of the dataset.
+## 5. `plot_women_in_parliament()` — line plot
+
+Draws a `ggplot2` line chart of the proportion of parliamentary seats held by
+women (`prop_in_par`) over time, one line per country, colored by democratic
+status so leadership transitions are easy to see.
+
+```{r}
+#| label: plot-parliament
+plot_women_in_parliament(
+  democracy_data,
+  countries = c("United States", "Sweden", "Honduras"),
+  min_year = 1990,
+  color_by = "is_democracy"
+)
+```
+
+## 6. `plot_accession_ages()` — ribbon-and-line plot
+
+Shows the average age at which presidents and monarchs took office, split by
+gender, with a shaded ribbon highlighting the gender gap for each leader type.
+
+```{r}
+#| label: plot-ages
+plot_accession_ages(
+  democracy_data,
+  min_year = 1980,
+  max_year = 2020
+)
+```
+
+## 7. `analyse_parliament_gap()` — statistical analysis
+
+Runs a Welch two-sample t-test comparing women's parliamentary representation
+across two groups. The grouping column is supplied unquoted via tidy
+evaluation, here comparing democracies to non-democracies.
+
+```{r}
+#| label: analyse-gap
+analyse_parliament_gap(democracy_data, group_col = is_democracy)
+```
+
+### `plot_regime()` — regime-share area chart
+
+Shows the share of countries classified under a given regime category over
+time, as a filled area-and-line chart.
+
+```{r}
+#| label: plot-regime
+plot_regime(
+  democracy_data,
+  regime_type = "Parliamentary democracy",
+  min_year = 1960,
+  max_year = 2020
+)
+```
+
+### `compare_regime_types2()` — t-test with string arguments
+
+A string argument alternative to `analyse_parliament_gap()` that compares a
+numeric outcome between two named regime values.
+
+```{r}
+#| label: compare-regime
+compare_regime_types2(
+  democracy_data,
+  outcome_var = "prop_in_par",
+  regime_var  = "is_democracy",
+  regime1     = TRUE,
+  regime2     = FALSE
+)
+```

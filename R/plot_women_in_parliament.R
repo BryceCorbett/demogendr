@@ -21,6 +21,12 @@
 #' @importFrom rlang .data
 #'
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' dem <- load_data()
+#' plot_women_in_parliament(dem, countries = c("Sweden", "United States"))
+#' }
 plot_women_in_parliament <- function(data,
                                      countries = c("United States", "Sweden", "Honduras"),
                                      min_year = 1990,

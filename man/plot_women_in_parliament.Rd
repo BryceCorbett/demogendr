@@ -33,3 +33,9 @@ country. Line color indicates the value of the variable specified by
 Creates a line plot showing the proportion of parliamentary seats held by
 women over time for selected countries.
 }
+\examples{
+\dontrun{
+dem <- load_data()
+plot_women_in_parliament(dem, countries = c("Sweden", "United States"))
+}
+}

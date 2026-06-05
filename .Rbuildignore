@@ -3,3 +3,6 @@
 ^doc$
 ^Meta$
 ^LICENSE\.md$
+^\.Rhistory$
+^\.DS_Store$
+^.*\.DS_Store$
